@@ -3,11 +3,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: PIBP2P
+    name: PIBP2PPrimary
     network: mainnet
     source:
       address: "0xC6793e41a0593Bd124A1ad8c09D06f6b219cF86b"
-      abi: PIBP2P
+      abi: PIBP2PPrimary
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -21,8 +21,8 @@ dataSources:
         - VoteDeal
         - AuditorNotification
       abis:
-        - name: PIBP2P
-          file: ./abis/PIBP2P.json
+        - name: PIBP2PPrimary
+          file: ./abis/PIBP2PPrimary.json
         - name: NameService
           file: ./abis/NameService.json
       eventHandlers:
@@ -36,25 +36,19 @@ dataSources:
           handler: handleUpdateOffer
         - event: CancelOffer(indexed bytes32)
           handler: handleCancelOffer
-        - event: VoteDeal(indexed bytes32,address,uint8,uint8)
-          handler: handleVoteDeal
-        - event: AuditorNotification(indexed bytes32)
-          handler: handleAuditorNotification
-        - event: UpdateReputation(address,uint256)
-          handler: handleUpdateReputation
-        - event: DealLock(indexed address,bool)
-          handler: handleDealLock
         - event: NewCommission(uint256)
           handler: handleNewCommission
-        - event: HandleDealReputation(indexed address,bool,address,uint256)
-          handler: handleHandleDealReputation
+        - event: SetOfferer(address,address,bool)
+          handler: handleSetOfferer
+        - event: SetAllowedOffer(address,address,bool)
+          handler: handleSetAllowedOffer
       file: ./src/p2p.ts
   - kind: ethereum/contract
-    name: PIBP2PCommodity
+    name: PIBP2PCommodityPrimary
     network: mainnet
     source:
       address: "0xA85277F0f1Fc88B71de8f610781fF35a49112E2d"
-      abi: PIBP2PCommodity
+      abi: PIBP2PCommodityPrimary
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -65,8 +59,8 @@ dataSources:
         - UpdateOffer
         - CancelOffer
       abis:
-        - name: PIBP2PCommodity
-          file: ./abis/PIBP2PCommodity.json
+        - name: PIBP2PCommodityPrimary
+          file: ./abis/PIBP2PCommodityPrimary.json
         - name: ERC721
           file: ./abis/ERC721.json
         - name: NameService

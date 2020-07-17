@@ -1,5 +1,5 @@
-import { NewOffer, UpdateOffer, CancelOffer } from "../generated/PIBP2P/PIBP2P";
-import { NewOffer as NewOfferCommodity, UpdateOffer as UpdateOfferCommodity, CancelOffer as CancelOfferCommodity } from "../generated/PIBP2PCommodity/PIBP2PCommodity";
+import { NewOffer, UpdateOffer, CancelOffer } from "../generated/PIBP2PPrimary/PIBP2PPrimary";
+import { NewOffer as NewOfferCommodity, UpdateOffer as UpdateOfferCommodity, CancelOffer as CancelOfferCommodity } from "../generated/PIBP2PCommodityPrimary/PIBP2PCommodityPrimary";
 import { Offer, OfferCommodity, Commodity, Token, Gold } from "../generated/schema";
 import { pushP2P, popP2P } from "./commodity";
 import { BigInt, BigDecimal } from "@graphprotocol/graph-ts";
