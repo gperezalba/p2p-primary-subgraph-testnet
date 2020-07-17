@@ -1,0 +1,147 @@
+type P2P @entity {
+  id: ID!
+  commission: BigInt!
+}
+
+type P2PCommodity @entity {
+  id: ID!
+  commission: BigInt!
+}
+
+type Offer @entity {
+  id: ID!
+  owner: User! # address
+  name: String
+  sellToken: Token! # address
+  buyToken: Token!
+  initialSellAmount: BigInt!
+  sellAmount: BigInt!
+  buyAmount: BigInt!
+  price: BigInt!
+  isPartial: Boolean!
+  isBuyFiat: Boolean!
+  minDealAmount: BigInt!
+  maxDealAmount: BigInt!
+  minReputation: BigInt!
+  auditor: Bytes
+  description: String
+  isOpen: Boolean!
+  country: [BigInt!]
+  timestamp: BigInt
+  payMethod: [BigInt!]
+  payAccount: [BigInt!]
+  deals: [Deal!]
+}
+
+#union Commodity = Gold | Diamond
+
+type OfferCommodity @entity {
+  id: ID!
+  owner: User! # address
+  name: String
+  sellToken: Token! # address
+  buyToken: Token!
+  sellId: Commodity! #tokenAddress - tokenId
+  buyAmount: BigInt!
+  price: BigInt!
+  price_per_brute_weight: BigInt!
+  price_per_fine_weight: BigInt!
+  description: String
+  isOpen: Boolean!
+  country: [BigInt!]
+  timestamp: BigInt
+  payMethod: [BigInt!]
+  deals: [Deal!]
+}
+
+type Deal @entity {
+  id: ID!
+  offer: Offer!
+  seller: User!
+  buyer: User!
+  sellAmount: BigInt!
+  buyAmount: BigInt!
+  sellerVote: BigInt
+  buyerVote: BigInt
+  auditorVote: BigInt
+  isPending: Boolean!
+  isSuccess: Boolean
+  executor: Bytes
+  timestamp: BigInt
+}
+
+type DealCommodity @entity {
+  id: ID!
+  offer: OfferCommodity!
+  buyer: User!
+  timestamp: BigInt
+}
+
+type User @entity {
+  id: ID!
+  name: String
+  offers: [Offer!]
+  commodityOffers: [OfferCommodity!]
+  deals: [Deal!]
+  commodityDeals: [DealCommodity!]
+  offchainReputation: BigInt
+  isDealLocked: Boolean
+  reputations: [Reputation!]
+}
+
+type Token @entity {
+  id: ID!
+  tokenSymbol: String!
+  tokenName: String!
+  isNFT: Boolean!
+  category: BigInt
+}
+
+type Commodity @entity {
+  id: ID!
+  tokenId: BigInt!
+  gold: Gold
+  diamond: Diamond
+  offer: OfferCommodity @derivedFrom(field: "sellId")
+}
+
+type Gold @entity {
+  id: ID!
+  reference: String
+  token: Token
+  weight_brute: BigInt
+  weight_fine: BigInt
+  law: BigInt
+  isLive: Boolean
+  isP2P: Boolean
+  isFake: Boolean
+  commodity: Commodity @derivedFrom(field: "gold")
+}
+
+type Diamond @entity {
+  id: ID!
+  reference: String
+  token: Token
+  color: BigInt
+  clarity: BigInt #cambiar a BigDecimal para filtrar?
+  cut: BigInt
+  carat_weight: BigInt
+  isLive: Boolean
+  isP2P: Boolean
+  isFake: Boolean
+  commodity: Commodity @derivedFrom(field: "diamond")
+}
+
+type Auditor @entity {
+  id: ID!
+  requests: [Deal!]
+}
+
+type Reputation @entity {
+  id: ID! #wallet-token
+  user: User!
+  token: Token!
+  goodReputation: BigInt!
+  badReputation: BigInt!
+  totalDeals: BigInt!
+}
