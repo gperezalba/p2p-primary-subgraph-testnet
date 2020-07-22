@@ -1,8 +1,9 @@
-import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission } from "../generated/PIBP2PPackablePrimary/PIBP2PPackablePrimary";
+import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission, SetOfferer, SetAllowedOffer } from "../generated/PIBP2PPackablePrimary/PIBP2PPackablePrimary";
 import { P2PPackable, OfferPackable } from "../generated/schema";
 import { cancelOfferPackable, updateOfferPackable, createOfferPackable } from "./offer";
 import { pushPackableOffer, pushPackableDeal } from "./user";
 import { createPackableDeal } from "./deal";
+import { handleSetOffererP2P, handleSetAllowedOfferP2P } from "./p2p";
 
 
 export function handleNewOffer(event: NewOffer): void {
@@ -40,3 +41,11 @@ export function handleNewCommission(event: NewCommission): void {
   
     p2p.save();
   }
+
+export function handleSetOfferer(event: SetOfferer): void {
+    handleSetOffererP2P(event);
+}
+
+export function handleSetAllowedOffer(event: SetAllowedOffer): void {
+    handleSetAllowedOfferP2P(event);
+}

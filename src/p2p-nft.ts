@@ -1,10 +1,11 @@
-import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission } from "../generated/PIBP2PCommodityPrimary/PIBP2PCommodityPrimary";
+import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission, SetAllowedOffer, SetOfferer } from "../generated/PIBP2PCommodityPrimary/PIBP2PCommodityPrimary";
 import { createOfferCommodity, updateOfferCommodity, cancelOfferCommodity } from "./offer";
 import { pushCommodityOffer, pushCommodityDeal } from "./user";
 import { createCommodityDeal } from "./deal";
 import { OfferCommodity, Commodity, P2PCommodity } from "../generated/schema";
 import { popP2P } from "./commodity";
 import { BigInt } from "@graphprotocol/graph-ts";
+import { handleSetOffererP2P, handleSetAllowedOfferP2P } from "./p2p";
 
 
 export function handleNewOffer(event: NewOffer): void {
@@ -43,3 +44,11 @@ export function handleNewCommission(event: NewCommission): void {
   
     p2p.save();
   }
+
+export function handleSetOfferer(event: SetOfferer): void {
+    handleSetOffererP2P(event);
+}
+
+export function handleSetAllowedOffer(event: SetAllowedOffer): void {
+    handleSetAllowedOfferP2P(event);
+}

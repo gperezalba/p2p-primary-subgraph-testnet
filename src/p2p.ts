@@ -54,6 +54,14 @@ export function handleNewCommission(event: NewCommission): void {
   p2p.save();
 }
 
+export function handleSetOffererP2P(event: SetOfferer): void {
+  handleSetOfferer(event);
+}
+
+export function handleSetAllowedOfferP2P(event: SetAllowedOffer): void {
+  handleSetAllowedOffer(event);
+}
+
 export function handleSetOfferer(event: SetOfferer): void {
   createUserIfNull(event.params.offerer.toHexString());
   let user = User.load(event.params.offerer.toHexString());
