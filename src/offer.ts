@@ -1,6 +1,7 @@
-import { NewOffer, UpdateOffer, CancelOffer } from "../generated/PIBP2PPrimary/PIBP2PPrimary";
-import { NewOffer as NewOfferCommodity, UpdateOffer as UpdateOfferCommodity, CancelOffer as CancelOfferCommodity } from "../generated/PIBP2PCommodityPrimary/PIBP2PCommodityPrimary";
-import { Offer, OfferCommodity, Commodity, Token, Gold } from "../generated/schema";
+import { NewOffer, UpdateOffer, CancelOffer } from "../generated/PIBP2P/PIBP2P";
+import { NewOffer as NewOfferCommodity, UpdateOffer as UpdateOfferCommodity, CancelOffer as CancelOfferCommodity } from "../generated/PIBP2PCommodity/PIBP2PCommodity";
+import { NewOffer as NewOfferPackable, UpdateOffer as UpdateOfferPackable, CancelOffer as CancelOfferPackable } from "../generated/PIBP2PPackable/PIBP2PPackable";
+import { Offer, OfferCommodity, Commodity, Token, OfferPackable } from "../generated/schema";
 import { pushP2P, popP2P } from "./commodity";
 import { BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 import { getNickname } from "./user";
@@ -84,22 +85,6 @@ export function createOfferCommodity(event: NewOfferCommodity): void {
     let token = Token.load(event.params.sellToken.toHexString());
     offer.deals = [];
 
-    if (token.category == BigInt.fromI32(1)) {
-        let gold = Gold.load(commodityId);
-
-        if (gold.weight_brute > BigInt.fromI32(0)) {
-            offer.price_per_brute_weight = event.params.buyAmount.times(getOneEther()).div(gold.weight_brute as BigInt);
-        } else {
-            offer.price_per_brute_weight = BigInt.fromI32(-1);
-        }
-
-        if (gold.weight_fine > BigInt.fromI32(0)) {
-            offer.price_per_fine_weight = event.params.buyAmount.times(getOneEther()).div(gold.weight_fine as BigInt);
-        } else {
-            offer.price_per_fine_weight = BigInt.fromI32(-1);
-        }
-    }
-
     let metadata: Array<BigInt> = event.params.metadata
     
     let isCountry = true;
@@ -120,6 +105,29 @@ export function createOfferCommodity(event: NewOfferCommodity): void {
 
     offer.country = countries;
     offer.payMethod = methods;
+
+    offer.save();
+}
+
+export function createOfferPackable(event: NewOfferPackable): void {
+    let offer = new OfferPackable(event.params.offerId.toHexString());
+
+    offer.owner = event.params.owner.toHexString();
+    offer.sellToken = event.params.sellToken.toHexString();
+    offer.sellId = event.params.sellToken.toHex().concat("-").concat(event.params.sellId.toHexString());
+    offer.sellAmount = event.params.sellAmount;
+    offer.buyToken = event.params.buyToken.toHexString();
+    offer.buyAmount = event.params.buyAmount;
+    offer.price = event.params.buyAmount;
+    offer.price_per_unit = event.params.buyAmount.times(getOneEther()).div(event.params.sellAmount);
+    offer.initialSellAmount = event.params.sellAmount;
+    offer.isPartial = event.params.isPartial;
+    offer.minDealAmount = event.params.minDealAmount;
+    offer.maxDealAmount = event.params.maxDealAmount;
+    offer.description = event.params.description;
+    offer.isOpen = true;
+    offer.timestamp = event.block.timestamp;
+    offer.deals = [];
 
     offer.save();
 }
@@ -147,31 +155,27 @@ export function updateOffer(event: UpdateOffer): void {
 
 export function updateOfferCommodity(event: UpdateOfferCommodity): void {
     let offer = OfferCommodity.load(event.params.offerId.toHexString());
-    let commodityId = offer.sellToken.concat("-").concat(event.params.sellId.toString());
 
     offer.buyAmount = event.params.buyAmount;
     offer.price = event.params.buyAmount;
-    let token = Token.load(offer.sellToken);
 
-    if (token.category == BigInt.fromI32(1)) {
+    if ((event.params.sellId == BigInt.fromI32(0)) && (event.params.buyAmount == BigInt.fromI32(0))) {
+        offer.isOpen = false;
+    }
 
-        if ((event.params.sellId == BigInt.fromI32(0)) && (event.params.buyAmount == BigInt.fromI32(0))) {
-            offer.isOpen = false;
-        } else {
-            let gold = Gold.load(commodityId);
-            
-            if (gold.weight_brute > BigInt.fromI32(0)) {
-                offer.price_per_brute_weight = event.params.buyAmount.times(getOneEther()).div(gold.weight_brute as BigInt);
-            } else {
-                offer.price_per_brute_weight = BigInt.fromI32(-1);
-            }
-    
-            if (gold.weight_fine > BigInt.fromI32(0)) {
-                offer.price_per_fine_weight = event.params.buyAmount.times(getOneEther()).div(gold.weight_fine as BigInt);
-            } else {
-                offer.price_per_fine_weight = BigInt.fromI32(-1);
-            }
-        }
+    offer.save();
+}
+
+export function updateOfferPackable(event: UpdateOfferPackable): void {
+    let offer = OfferPackable.load(event.params.offerId.toHexString());
+
+    offer.sellAmount = event.params.sellAmount;
+    offer.buyAmount = event.params.buyAmount;
+    offer.price = event.params.buyAmount;
+    offer.price_per_unit = offer.price.times(getOneEther()).div(offer.sellAmount);
+
+    if ((event.params.sellAmount == BigInt.fromI32(0)) && (event.params.buyAmount == BigInt.fromI32(0))) {
+        offer.isOpen = false;
     }
 
     offer.save();
@@ -191,7 +195,15 @@ export function cancelOfferCommodity(event: CancelOfferCommodity): void {
     offer.isOpen = false;
 
     let commodity = Commodity.load(offer.sellId);
-    popP2P(offer.sellToken, commodity.tokenId);
+    popP2P(offer.sellToken, commodity.tokenId as BigInt);
+
+    offer.save();
+}
+
+export function cancelOfferPackable(event: CancelOfferPackable): void {
+    let offer = OfferPackable.load(event.params.offerId.toHexString());
+
+    offer.isOpen = false;
 
     offer.save();
 }
@@ -210,6 +222,18 @@ export function pushDealToOffer(offerId: string, dealId: string): void {
 
 export function pushDealToOfferCommodity(offerId: string, dealId: string): void {
     let offer = OfferCommodity.load(offerId);
+
+    if (offer != null) {
+        let array = offer.deals;
+        array.push(dealId);
+        offer.deals = array;
+
+        offer.save();
+    }
+}
+
+export function pushDealToOfferPackable(offerId: string, dealId: string): void {
+    let offer = OfferPackable.load(offerId);
 
     if (offer != null) {
         let array = offer.deals;

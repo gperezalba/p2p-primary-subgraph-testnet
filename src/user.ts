@@ -1,7 +1,7 @@
 import { User, Reputation } from "../generated/schema";
 import { BigInt, Address } from "@graphprotocol/graph-ts";
-import { PIBP2PPrimary } from "../generated/PIBP2PPrimary/PIBP2PPrimary";
-import { NameService, CreateName } from "../generated/NameService/NameService";
+import { PIBP2P, HandleDealReputation } from "../generated/PIBP2P/PIBP2P";
+import { NameService, CreateName } from "../generated/templates/NameService/NameService";
 
 export function handleCreateName(event: CreateName): void {
     createUserIfNull(event.params.wallet.toHexString());
@@ -29,6 +29,17 @@ export function pushCommodityOffer(userId: string, offerId: string): void {
     user.save();
 }
 
+export function pushPackableOffer(userId: string, offerId: string): void {
+    createUserIfNull(userId);
+    let user = User.load(userId);
+
+    let offers = user.packableOffers;
+    offers.push(offerId);
+    user.packableOffers = offers;
+
+    user.save();
+}
+
 export function pushPendingDeal(userId: string, dealId: string): void {
     createUserIfNull(userId);
     let user = User.load(userId);
@@ -51,6 +62,17 @@ export function pushCommodityDeal(userId: string, dealId: string): void {
     user.save();
 }
 
+export function pushPackableDeal(userId: string, dealId: string): void {
+    createUserIfNull(userId);
+    let user = User.load(userId);
+
+    let deals = user.packableDeals;
+    deals.push(dealId);
+    user.packableDeals = deals;
+
+    user.save();
+}
+
 export function createUserIfNull(userId: string): void {
     let user = User.load(userId);
 
@@ -58,10 +80,11 @@ export function createUserIfNull(userId: string): void {
         user = new User(userId);
         user.offers = [];
         user.commodityOffers = [];
+        user.packableOffers = [];
         user.deals = [];
         user.commodityDeals = [];
+        user.packableDeals = [];
         user.reputations = [];
-        user.allowedTokens = [];
         user.name = getNickname(userId);
         user.offchainReputation = BigInt.fromI32(0);
         user.isDealLocked = false;
@@ -79,6 +102,24 @@ export function getNickname(walletAddress: string): string {
     } else {
         return "reverted";
     }
+}
+
+export function updateReputation(event: HandleDealReputation): void {
+    createUserIfNull(event.params.seller.toHexString());
+    let user = User.load(event.params.seller.toHexString());
+    let reputationId = event.params.seller.toHexString().concat("-").concat(event.params.tokenAddress.toHexString());
+    createReputationIfNull(reputationId, event.params.seller.toHexString(), event.params.tokenAddress.toHexString());
+    let reputation = Reputation.load(reputationId);
+
+    reputation.totalDeals = reputation.totalDeals.plus(BigInt.fromI32(1));
+
+    if (event.params.isSuccess) {
+        reputation.goodReputation = reputation.goodReputation.plus(event.params.dealAmount);
+    } else {
+        reputation.badReputation = reputation.badReputation.plus(event.params.dealAmount);
+    }
+
+    reputation.save();
 }
 
 function createReputationIfNull(id: string, user: string, tokenAddress: string): void {

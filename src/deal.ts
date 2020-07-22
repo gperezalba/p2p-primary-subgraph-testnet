@@ -1,8 +1,9 @@
-import { Deal, Offer, DealCommodity } from "../generated/schema";
-import { NewPendingDeal } from "../generated/PIBP2PPrimary/PIBP2PPrimary";
+import { Deal, Offer, DealCommodity, DealPackable, OfferPackable } from "../generated/schema";
+import { NewPendingDeal, VoteDeal } from "../generated/PIBP2P/PIBP2P";
 import { BigDecimal, Address, BigInt } from "@graphprotocol/graph-ts";
-import { NewDeal } from "../generated/PIBP2PCommodityPrimary/PIBP2PCommodityPrimary";
-import { pushDealToOffer, pushDealToOfferCommodity } from "./offer";
+import { NewDeal } from "../generated/PIBP2PCommodity/PIBP2PCommodity";
+import { NewDeal as NewDealPackable } from "../generated/PIBP2PPackable/PIBP2PPackable";
+import { pushDealToOffer, pushDealToOfferCommodity, pushDealToOfferPackable } from "./offer";
 
 export function createDeal(event: NewPendingDeal): void {
     let deal = Deal.load(event.params.dealId.toHexString());
@@ -44,6 +45,24 @@ export function createCommodityDeal(event: NewDeal): void {
     }
 }
 
+export function createPackableDeal(event: NewDealPackable): void {
+    let deal = DealPackable.load(event.params.offerId.toHexString());
+
+    if (deal == null) {
+        deal = new DealPackable(event.params.offerId.toHexString());
+
+        deal.offer = event.params.offerId.toHexString();
+        deal.buyer = event.params.buyer.toHexString();
+        deal.sellAmount = event.params._sellAmount;
+        deal.buyAmount = event.params._buyAmount;
+        deal.timestamp = event.block.timestamp;
+
+        deal.save();
+
+        pushDealToOfferPackable(event.params.offerId.toHexString(), event.params.offerId.toHexString());
+    }
+}
+
 export function finishDeal(dealId: string, success: boolean, executor: Address): void {
     let deal = Deal.load(dealId);
 
@@ -51,6 +70,23 @@ export function finishDeal(dealId: string, success: boolean, executor: Address):
         deal.isPending = false;
         deal.isSuccess = success;
         deal.executor = executor;
+
+        deal.save();
+    }
+}
+
+export function updateVote(event: VoteDeal): void {
+    let deal = Deal.load(event.params.dealId.toHexString());
+
+    if (deal != null) {
+        
+        if (event.params.sender == Address.fromString(deal.buyer)) {
+            deal.buyerVote = BigInt.fromI32(event.params.vote);
+            deal.sellerVote = BigInt.fromI32(event.params.counterpartVote);
+        } else {
+            deal.sellerVote = BigInt.fromI32(event.params.vote);
+            deal.buyerVote = BigInt.fromI32(event.params.counterpartVote);
+        }
 
         deal.save();
     }

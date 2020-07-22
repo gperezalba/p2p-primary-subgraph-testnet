@@ -1,13 +1,13 @@
 {
-  "name": "p2p-primary-subgraph-testnet",
+  "name": "p2p-subgraph-testnet",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gperezalba/p2p-primary-subgraph-testnet",
-    "create-local": "graph create --node http://localhost:8020/ gperezalba/p2p-primary-subgraph-testnet",
-    "remove-local": "graph remove --node http://localhost:8020/ gperezalba/p2p-primary-subgraph-testnet",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gperezalba/p2p-primary-subgraph-testnet"
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ gperezalba/p2p-subgraph-testnet",
+    "create-local": "graph create --node http://localhost:8020/ gperezalba/p2p-subgraph-testnet",
+    "remove-local": "graph remove --node http://localhost:8020/ gperezalba/p2p-subgraph-testnet",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 gperezalba/p2p-subgraph-testnet"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.17.1",

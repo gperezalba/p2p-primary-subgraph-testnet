@@ -3,11 +3,11 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: PIBP2PPrimary
+    name: PIBP2P
     network: mainnet
     source:
-      address: "0xe837eD6158920937e42c52Ec59f3Ff01CF994195"
-      abi: PIBP2PPrimary
+      address: "0xb2f8cbA22875BA1df9dF58226c5B5480D54085C7"
+      abi: PIBP2P
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -21,8 +21,8 @@ dataSources:
         - VoteDeal
         - AuditorNotification
       abis:
-        - name: PIBP2PPrimary
-          file: ./abis/PIBP2PPrimary.json
+        - name: PIBP2P
+          file: ./abis/PIBP2P.json
         - name: NameService
           file: ./abis/NameService.json
       eventHandlers:
@@ -36,19 +36,25 @@ dataSources:
           handler: handleUpdateOffer
         - event: CancelOffer(indexed bytes32)
           handler: handleCancelOffer
+        - event: VoteDeal(indexed bytes32,address,uint8,uint8)
+          handler: handleVoteDeal
+        - event: AuditorNotification(indexed bytes32)
+          handler: handleAuditorNotification
+        - event: UpdateReputation(address,uint256)
+          handler: handleUpdateReputation
+        - event: DealLock(indexed address,bool)
+          handler: handleDealLock
         - event: NewCommission(uint256)
           handler: handleNewCommission
-        - event: SetOfferer(address,address,bool)
-          handler: handleSetOfferer
-        - event: SetAllowedOffer(address,address,bool)
-          handler: handleSetAllowedOffer
+        - event: HandleDealReputation(indexed address,bool,address,uint256)
+          handler: handleHandleDealReputation
       file: ./src/p2p.ts
   - kind: ethereum/contract
-    name: PIBP2PCommodityPrimary
+    name: PIBP2PCommodity
     network: mainnet
     source:
-      address: "0x4140d1c70162b40a4024A9d377F53B19AA346e3d"
-      abi: PIBP2PCommodityPrimary
+      address: "0xA36D82706D3205ac479f9c9764FeFB107e1aA84A"
+      abi: PIBP2PCommodity
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
@@ -59,8 +65,8 @@ dataSources:
         - UpdateOffer
         - CancelOffer
       abis:
-        - name: PIBP2PCommodityPrimary
-          file: ./abis/PIBP2PCommodityPrimary.json
+        - name: PIBP2PCommodity
+          file: ./abis/PIBP2PCommodity.json
         - name: ERC721
           file: ./abis/ERC721.json
         - name: NameService
@@ -77,6 +83,40 @@ dataSources:
         - event: NewCommission(uint256)
           handler: handleNewCommission
       file: ./src/p2p-nft.ts
+  - kind: ethereum/contract
+    name: PIBP2PPackable
+    network: mainnet
+    source:
+      address: "0xd956896325BBEaE97B927e5dC8B7bE09e660bA0a"
+      abi: PIBP2PPackable
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.3
+      language: wasm/assemblyscript
+      entities:
+        - NewOffer
+        - NewDeal
+        - UpdateOffer
+        - CancelOffer
+      abis:
+        - name: PIBP2PPackable
+          file: ./abis/PIBP2PPackable.json
+        - name: PNFTInterface
+          file: ./abis/PNFTInterface.json
+        - name: NameService
+          file: ./abis/NameService.json
+      eventHandlers:
+        - event: NewOffer(indexed address,indexed address,address,bytes32,uint256,uint256,bool,uint256,uint256,string,indexed bytes32,uint256[])
+          handler: handleNewOffer
+        - event: NewDeal(indexed bytes32,indexed address,uint256,uint256)
+          handler: handleNewDeal
+        - event: UpdateOffer(indexed bytes32,bytes32,uint256,uint256)
+          handler: handleUpdateOffer
+        - event: CancelOffer(indexed bytes32)
+          handler: handleCancelOffer
+        - event: NewCommission(uint256)
+          handler: handleNewCommission
+      file: ./src/p2p-pnft.ts
   - kind: ethereum/contract
     name: Controller
     network: mainnet
@@ -102,6 +142,8 @@ dataSources:
           handler: handleNewToken
         - event: NewNFToken(address,uint256,bool)
           handler: handleNewNFToken
+        - event: NewPNFToken(address,uint256,bool)
+          handler: handleNewPNFToken
       file: ./src/controller.ts
   - kind: ethereum/contract
     name: NameService
@@ -165,3 +207,23 @@ templates:
           handler: handleNewJson
         - event: FakeToken(indexed uint256)
           handler: handleFakeToken
+  - name: PNFTInterface
+    kind: ethereum/contract
+    network: mainnet
+    source:
+      abi: PNFTInterface
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.1
+      language: wasm/assemblyscript
+      file: ./src/packable.ts
+      entities:
+        - Transfer
+      abis:
+        - name: PNFTInterface
+          file: ./abis/PNFTInterface.json
+        - name: Token
+          file: ./abis/Token.json
+      eventHandlers:
+        - event: NewJson(indexed bytes32,uint256[5])
+          handler: handleNewJson
