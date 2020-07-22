@@ -1,4 +1,4 @@
-import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission } from "../generated/PIBP2PPackable/PIBP2PPackable";
+import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission } from "../generated/PIBP2PPackablePrimary/PIBP2PPackablePrimary";
 import { P2PPackable, OfferPackable } from "../generated/schema";
 import { cancelOfferPackable, updateOfferPackable, createOfferPackable } from "./offer";
 import { pushPackableOffer, pushPackableDeal } from "./user";
