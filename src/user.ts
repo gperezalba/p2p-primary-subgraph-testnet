@@ -1,7 +1,7 @@
 import { User, Reputation } from "../generated/schema";
 import { BigInt, Address } from "@graphprotocol/graph-ts";
 import { PIBP2P, HandleDealReputation } from "../generated/PIBP2P/PIBP2P";
-import { NameService, CreateName } from "../generated/templates/NameService/NameService";
+import { NameService, CreateName } from "../generated/NameService/NameService";
 
 export function handleCreateName(event: CreateName): void {
     createUserIfNull(event.params.wallet.toHexString());
