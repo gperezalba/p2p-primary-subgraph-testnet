@@ -25,56 +25,15 @@
 		"constant": false,
 		"inputs": [
 			{
-				"name": "_operator",
-				"type": "address"
-			},
-			{
-				"name": "_from",
-				"type": "address"
-			},
-			{
-				"name": "_tokenId",
-				"type": "uint256"
-			},
-			{
-				"name": "_data",
-				"type": "bytes"
-			}
-		],
-		"name": "onERC721Received",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bytes4"
-			}
-		],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_newCommission",
-				"type": "uint256"
-			}
-		],
-		"name": "setCommission",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
 				"name": "_sellToken",
 				"type": "address"
 			},
 			{
 				"name": "_sellId",
+				"type": "bytes32"
+			},
+			{
+				"name": "_sellAmount",
 				"type": "uint256"
 			},
 			{
@@ -83,6 +42,18 @@
 			},
 			{
 				"name": "_buyAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "_isPartial",
+				"type": "bool"
+			},
+			{
+				"name": "_minDealAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "_maxDealAmount",
 				"type": "uint256"
 			},
 			{
@@ -103,6 +74,20 @@
 		],
 		"payable": true,
 		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_newCommission",
+				"type": "uint256"
+			}
+		],
+		"name": "setCommission",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -143,6 +128,10 @@
 			},
 			{
 				"name": "sellId",
+				"type": "bytes32"
+			},
+			{
+				"name": "sellAmount",
 				"type": "uint256"
 			},
 			{
@@ -151,6 +140,18 @@
 			},
 			{
 				"name": "buyAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "isPartial",
+				"type": "bool"
+			},
+			{
+				"name": "minDealAmount",
+				"type": "uint256"
+			},
+			{
+				"name": "maxDealAmount",
 				"type": "uint256"
 			}
 		],
@@ -182,6 +183,29 @@
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_offerId",
+				"type": "bytes32"
+			},
+			{
+				"name": "_buyAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "deal",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"constant": true,
 		"inputs": [],
 		"name": "on",
@@ -193,6 +217,41 @@
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_operator",
+				"type": "address"
+			},
+			{
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"name": "_tokenId",
+				"type": "bytes32"
+			},
+			{
+				"name": "_amount",
+				"type": "uint256"
+			},
+			{
+				"name": "_data",
+				"type": "bytes"
+			}
+		],
+		"name": "onPNFTReceived",
+		"outputs": [
+			{
+				"name": "",
+				"type": "bytes4"
+			}
+		],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -282,25 +341,6 @@
 		"type": "function"
 	},
 	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_offerId",
-				"type": "bytes32"
-			}
-		],
-		"name": "deal",
-		"outputs": [
-			{
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"payable": true,
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
 		"constant": true,
 		"inputs": [],
 		"name": "commission",
@@ -378,11 +418,31 @@
 			{
 				"indexed": false,
 				"name": "sellId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "sellAmount",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
 				"name": "buyAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "isPartial",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"name": "minDealAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"name": "maxDealAmount",
 				"type": "uint256"
 			},
 			{
@@ -419,6 +479,11 @@
 			},
 			{
 				"indexed": false,
+				"name": "_sellAmount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
 				"name": "_buyAmount",
 				"type": "uint256"
 			}
@@ -437,6 +502,11 @@
 			{
 				"indexed": false,
 				"name": "sellId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"name": "sellAmount",
 				"type": "uint256"
 			},
 			{

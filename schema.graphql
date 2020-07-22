@@ -122,6 +122,7 @@ type User @entity {
   offchainReputation: BigInt
   isDealLocked: Boolean
   reputations: [Reputation!]
+  allowedTokens: [Token!]
 }
 
 type Token @entity {
@@ -147,11 +148,6 @@ type Commodity @entity {
   offer: OfferCommodity @derivedFrom(field: "sellId")
 }
 
-type Auditor @entity {
-  id: ID!
-  requests: [Deal!]
-}
-
 type Reputation @entity {
   id: ID! #wallet-token
   user: User!
@@ -159,6 +155,13 @@ type Reputation @entity {
   goodReputation: BigInt!
   badReputation: BigInt!
   totalDeals: BigInt!
+}
+
+type Pair @entity {
+  id: ID! #sellToken-buyToken
+  sellToken: Token!
+  buyToken: Token!
+  isAllowed: Boolean!
 }
 
 type Packable @entity {

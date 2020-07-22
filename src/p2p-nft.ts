@@ -1,4 +1,4 @@
-import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission } from "../generated/PIBP2PCommodity/PIBP2PCommodity";
+import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission } from "../generated/PIBP2PCommodityPrimary/PIBP2PCommodityPrimary";
 import { createOfferCommodity, updateOfferCommodity, cancelOfferCommodity } from "./offer";
 import { pushCommodityOffer, pushCommodityDeal } from "./user";
 import { createCommodityDeal } from "./deal";
