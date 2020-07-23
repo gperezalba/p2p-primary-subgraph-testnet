@@ -119,7 +119,11 @@ export function createOfferPackable(event: NewOfferPackable): void {
     offer.buyToken = event.params.buyToken.toHexString();
     offer.buyAmount = event.params.buyAmount;
     offer.price = event.params.buyAmount;
-    offer.price_per_unit = event.params.buyAmount.times(getOneEther()).div(event.params.sellAmount);
+    if (event.params.sellAmount > BigInt.fromI32(0)) {
+        offer.price_per_unit = event.params.buyAmount.times(getOneEther()).div(event.params.sellAmount);
+    } else {
+        offer.price_per_unit = BigInt.fromI32(0);
+    }
     offer.initialSellAmount = event.params.sellAmount;
     offer.isPartial = event.params.isPartial;
     offer.minDealAmount = event.params.minDealAmount;
@@ -172,7 +176,11 @@ export function updateOfferPackable(event: UpdateOfferPackable): void {
     offer.sellAmount = event.params.sellAmount;
     offer.buyAmount = event.params.buyAmount;
     offer.price = event.params.buyAmount;
-    offer.price_per_unit = offer.price.times(getOneEther()).div(offer.sellAmount);
+    if (offer.sellAmount > BigInt.fromI32(0)) {
+        offer.price_per_unit = offer.price.times(getOneEther()).div(offer.sellAmount);
+    } else {
+        offer.price_per_unit = BigInt.fromI32(0);
+    }
 
     if ((event.params.sellAmount == BigInt.fromI32(0)) && (event.params.buyAmount == BigInt.fromI32(0))) {
         offer.isOpen = false;
