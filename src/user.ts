@@ -95,7 +95,7 @@ export function createUserIfNull(userId: string): void {
 }
 
 export function getNickname(walletAddress: string): string {
-    let nameService = NameService.bind(Address.fromString("0x672af58B94683cBcd2De173c5940d49Deb4cF5E6"));
+    let nameService = NameService.bind(Address.fromString("0xa235C036b75413e68f373BCa100bF818423Ee5B6"));
     let name = nameService.try_name(Address.fromString(walletAddress));
 
     if (!name.reverted) {
