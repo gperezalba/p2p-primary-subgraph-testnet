@@ -8,7 +8,7 @@ import { BigInt } from "@graphprotocol/graph-ts";
 
 export function handleNewOffer(event: NewOffer): void {
     createOfferCommodity(event);
-    pushCommodityOffer(event.params.owner.toHexString(), event.params.offerId.toHexString());
+    //pushCommodityOffer(event.params.owner.toHexString(), event.params.offerId.toHexString());
 }
 
 export function handleNewDeal(event: NewDeal): void {
