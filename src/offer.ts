@@ -114,7 +114,7 @@ export function createOfferPackable(event: NewOfferPackable): void {
 
     offer.owner = event.params.owner.toHexString();
     offer.sellToken = event.params.sellToken.toHexString();
-    offer.sellId = event.params.sellToken.toHex().concat("-").concat(event.params.sellId.toHexString());
+    offer.sellId = event.params.sellToken.toHex().concat("-").concat(event.params.tokenId.toHexString());
     offer.sellAmount = event.params.sellAmount;
     offer.buyToken = event.params.buyToken.toHexString();
     offer.buyAmount = event.params.buyAmount;
@@ -126,8 +126,11 @@ export function createOfferPackable(event: NewOfferPackable): void {
     }
     offer.initialSellAmount = event.params.sellAmount;
     offer.isPartial = event.params.isPartial;
-    offer.minDealAmount = event.params.minDealAmount;
-    offer.maxDealAmount = event.params.maxDealAmount;
+    offer.isFiat = event.params.isBuyFiat;
+    let limits = event.params.limits;
+    offer.minDealAmount = limits[0];
+    offer.maxDealAmount = limits[1];
+    offer.minReputation = limits[2];
     offer.description = event.params.description;
     offer.isOpen = true;
     offer.timestamp = event.block.timestamp;

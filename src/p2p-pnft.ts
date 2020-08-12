@@ -1,15 +1,15 @@
-import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission, SetOfferer, SetAllowedOffer } from "../generated/PIBP2PPackablePrimary/PIBP2PPackablePrimary";
-import { P2PPackable, OfferPackable, Pair, User } from "../generated/schema";
+import { NewOffer, NewDeal, UpdateOffer, CancelOffer, NewCommission, SetOfferer, SetAllowedOffer, NewPendingDeal, VoteDeal, AuditorNotification, DealLock } from "../generated/PIBP2PPackablePrimary/PIBP2PPackablePrimary";
+import { P2PPackable, OfferPackable, Pair, User, DealPackable, Auditor } from "../generated/schema";
 import { cancelOfferPackable, updateOfferPackable, createOfferPackable } from "./offer";
 import { pushPackableOffer, pushPackableDeal, createUserIfNull } from "./user";
-import { createPackableDeal } from "./deal";
+import { createPackableDeal, finishDealPackable, updateVotePackable } from "./deal";
 
 export function handleNewOffer(event: NewOffer): void {
     createOfferPackable(event);
     pushPackableOffer(event.params.owner.toHexString(), event.params.offerId.toHexString());
 }
 
-export function handleNewDeal(event: NewDeal): void {
+export function handleNewPendingDeal(event: NewPendingDeal): void {
     createPackableDeal(event);
     let offer = OfferPackable.load(event.params.offerId.toHexString());
     if (offer != null) {
@@ -20,12 +20,50 @@ export function handleNewDeal(event: NewDeal): void {
 
 }
 
+export function handleNewDeal(event: NewDeal): void {
+    finishDealPackable(event.params.dealId.toHexString(), event.params.success, event.params.sender);
+}
+
 export function handleUpdateOffer(event: UpdateOffer): void {
     updateOfferPackable(event);
 }
 
 export function handleCancelOffer(event: CancelOffer): void {
     cancelOfferPackable(event);
+}
+
+export function handleDealLock(event: DealLock): void {
+    createUserIfNull(event.params.user.toHexString());
+    let user = User.load(event.params.user.toHexString());
+
+    user.isDealLocked = event.params.isLocked;
+
+    user.save();
+}
+
+export function handleVoteDeal(event: VoteDeal): void {
+    updateVotePackable(event);
+}
+
+export function handleAuditorNotification(event: AuditorNotification): void {
+    let deal = DealPackable.load(event.params.dealId.toHexString());
+
+    if (deal != null) {
+        let offer = OfferPackable.load(deal.offer);
+
+        if (offer != null) {
+            let auditor = Auditor.load(offer.auditor.toHexString());
+
+            if (auditor == null) {
+                auditor = new Auditor(offer.auditor.toHexString());
+                let requests = auditor.requests;
+                requests.push(deal.id);
+                auditor.requests = requests;
+
+                auditor.save();
+            }
+        }
+    }
 }
 
 export function handleNewCommission(event: NewCommission): void {

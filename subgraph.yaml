@@ -85,7 +85,7 @@ dataSources:
     name: PIBP2PPackablePrimary
     network: mainnet
     source:
-      address: "0xfc18784Ae5ce01fE9C7692473C7Bc11e7AB8871A"
+      address: "0xcFd761628f2718aC3660B36CcddD3577634f1228"
       abi: PIBP2PPackablePrimary
     mapping:
       kind: ethereum/events
@@ -104,14 +104,20 @@ dataSources:
         - name: NameService
           file: ./abis/NameService.json
       eventHandlers:
-        - event: NewOffer(indexed address,indexed address,address,bytes32,uint256,uint256,bool,uint256,uint256,string,indexed bytes32,uint256[])
+        - event: NewOffer(indexed address,indexed address,bytes32,address,uint256,uint256,bool,bool,uint256[3],address,string,indexed bytes32,uint256[])
           handler: handleNewOffer
-        - event: NewDeal(indexed bytes32,indexed address,uint256,uint256)
+        - event: NewPendingDeal(indexed bytes32,indexed bytes32,address,uint256,uint256)
+          handler: handleNewPendingDeal
+        - event: NewDeal(indexed bytes32,bool,indexed address)
           handler: handleNewDeal
-        - event: UpdateOffer(indexed bytes32,bytes32,uint256,uint256)
+        - event: UpdateOffer(indexed bytes32,uint256,uint256)
           handler: handleUpdateOffer
         - event: CancelOffer(indexed bytes32)
           handler: handleCancelOffer
+        - event: VoteDeal(indexed bytes32,address,uint8,uint8)
+          handler: handleVoteDeal
+        - event: AuditorNotification(indexed bytes32)
+          handler: handleAuditorNotification
         - event: NewCommission(uint256)
           handler: handleNewCommission
         - event: SetOfferer(address,address,bool)

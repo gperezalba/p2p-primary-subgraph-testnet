@@ -70,8 +70,11 @@ type OfferPackable @entity {
   price: BigInt!
   price_per_unit: BigInt!
   isPartial: Boolean!
+  isFiat: Boolean!
   minDealAmount: BigInt!
   maxDealAmount: BigInt!
+  minReputation: BigInt!
+  auditor: Bytes
   description: String
   isOpen: Boolean!
   timestamp: BigInt!
@@ -106,7 +109,12 @@ type DealPackable @entity {
   offer: OfferPackable!
   buyer: User!
   sellAmount: BigInt!
-  buyAmount: BigInt!
+  buyAmount: BigInt!sellerVote: BigInt
+  buyerVote: BigInt
+  auditorVote: BigInt
+  isPending: Boolean!
+  isSuccess: Boolean
+  executor: Bytes
   timestamp: BigInt
 }
 
@@ -123,6 +131,11 @@ type User @entity {
   isDealLocked: Boolean
   reputations: [Reputation!]
   allowedTokens: [Token!]
+}
+
+type Auditor @entity {
+  id: ID!
+  requests: [Deal!]
 }
 
 type Token @entity {
